@@ -17,6 +17,9 @@ func StudentHandler() http.HandlerFunc {
 			return
 		}
 		w.Write([]byte("Welcome to the Student CRUD API"))
+
+		response.ToJson(w, http.StatusOK, map[string]string{
+			"message": "Student created successfully"})
 	}
 
 }
