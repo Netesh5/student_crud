@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/netesh5/student_crud/internal/config"
+	student "github.com/netesh5/student_crud/internal/http/handlers"
 )
 
 func main() {
@@ -19,7 +20,8 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", initialPage).Methods("GET")
-	router.HandleFunc("/students", getStudents).Methods("GET")
+	router.HandleFunc("/students", student.StudentHandler()).Methods("GET")
+	router.HandleFunc("/students", student.StudentHandler()).Methods("POST")
 
 	server := http.Server{
 		Addr:    config.Server.Address,
@@ -51,10 +53,6 @@ func main() {
 		slog.Info("Server exited gracefully")
 	}
 
-}
-
-func getStudents(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World"))
 }
 
 func initialPage(w http.ResponseWriter, r *http.Request) {
