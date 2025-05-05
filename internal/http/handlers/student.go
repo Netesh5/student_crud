@@ -13,13 +13,11 @@ func StudentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var student types.Student
 		if err := json.NewDecoder(r.Body).Decode(&student); err != nil {
-			response.ToJson(w, http.StatusBadRequest, err.Error())
+			response.ToJson(w, http.StatusBadRequest, response.ErrorResponse(err))
 			return
 		}
 		w.Write([]byte("Welcome to the Student CRUD API"))
 
-		response.ToJson(w, http.StatusOK, map[string]string{
-			"message": "Student created successfully"})
 	}
 
 }
