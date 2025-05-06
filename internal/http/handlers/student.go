@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	types "github.com/netesh5/student_crud/internal/type"
 	"github.com/netesh5/student_crud/internal/utils/response"
 )
@@ -16,7 +17,17 @@ func StudentHandler() http.HandlerFunc {
 			response.ToJson(w, http.StatusBadRequest, response.ErrorResponse(err))
 			return
 		}
-		w.Write([]byte("Welcome to the Student CRUD API"))
+		// w.Write([]byte("Welcome to the Student CRUD API"))
+
+		if err := validator.New().Struct(student); err != nil {
+			response.ToJson(w, http.StatusBadRequest, response.ValidationErrorResponse(err.(validator.ValidationErrors)))
+			return
+		}
+
+		response.ToJson(w, http.StatusOK, map[string]string{
+			"message": "Student created successfully",
+			"student": student.Name,
+		})
 
 	}
 
