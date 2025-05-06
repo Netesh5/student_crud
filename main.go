@@ -12,15 +12,23 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/netesh5/student_crud/internal/config"
 	student "github.com/netesh5/student_crud/internal/http/handlers"
+	"github.com/netesh5/student_crud/internal/storage/sqlite"
 )
 
 func main() {
 	config := config.MustLoad()
 	println(config.Env)
 
+	storage, err := sqlite.New(config)
+	if err != nil {
+		println("Error in creating storage", err.Error())
+		return
+	}
+	slog.Info("Storage initialized successfully", slog.String("storage_path", config.StoragePath), slog.String("env", config.Env))
+
 	router := mux.NewRouter()
 	router.HandleFunc("/", initialPage).Methods("GET")
-	router.HandleFunc("/students", student.StudentHandler()).Methods("GET")
+	router.HandleFunc("/students", student.StudentHandler(storage.(*storage.Storage))).Methods("GET")
 	router.HandleFunc("/students", student.StudentHandler()).Methods("POST")
 
 	server := http.Server{

@@ -5,11 +5,12 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/netesh5/student_crud/internal/storage"
 	types "github.com/netesh5/student_crud/internal/type"
 	"github.com/netesh5/student_crud/internal/utils/response"
 )
 
-func StudentHandler() http.HandlerFunc {
+func StudentHandler(storage *storage.Storage) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		var student types.Student
