@@ -28,8 +28,8 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", initialPage).Methods("GET")
-	router.HandleFunc("/students", student.StudentHandler(storage.(*storage.Storage))).Methods("GET")
-	router.HandleFunc("/students", student.StudentHandler()).Methods("POST")
+	router.HandleFunc("/students", student.StudentHandler(storage)).Methods("GET")
+	router.HandleFunc("/students", student.StudentHandler(storage)).Methods("POST")
 
 	server := http.Server{
 		Addr:    config.Server.Address,
