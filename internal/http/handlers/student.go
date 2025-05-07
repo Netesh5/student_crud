@@ -2,6 +2,7 @@ package student
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -50,15 +51,16 @@ func CreateStudent(s storage.Storage) http.HandlerFunc {
 func GetStudentById(s storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// id:=r.URL.Query().Get("id")
-		id := r.PathValue("id")
+		id := r.URL.Path[len("/student/"):]
+
+		if id == "" {
+			response.ToJson(w, http.StatusBadRequest, response.ErrorResponse(errors.New("id is required")))
+			return
+		}
 
 		parseId, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			response.ToJson(w, http.StatusBadRequest, response.ErrorResponse(err))
-			return
-		}
-		if id == "" {
-			response.ToJson(w, http.StatusBadRequest, response.ValidationErrorResponse(validator.ValidationErrors{}))
 			return
 		}
 		student, err := s.GetStudentById(parseId)
