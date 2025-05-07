@@ -11,7 +11,7 @@ import (
 	"github.com/netesh5/student_crud/internal/utils/response"
 )
 
-func StudentHandler(s storage.Storage) http.HandlerFunc {
+func CreateStudent(s storage.Storage) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		var student types.Student
@@ -19,7 +19,6 @@ func StudentHandler(s storage.Storage) http.HandlerFunc {
 			response.ToJson(w, http.StatusBadRequest, response.ErrorResponse(err))
 			return
 		}
-		// w.Write([]byte("Welcome to the Student CRUD API"))
 
 		if err := validator.New().Struct(student); err != nil {
 			response.ToJson(w, http.StatusBadRequest, response.ValidationErrorResponse(err.(validator.ValidationErrors)))
@@ -43,6 +42,42 @@ func StudentHandler(s storage.Storage) http.HandlerFunc {
 				"message": "Student created successfully",
 			},
 		})
+
+	}
+
+}
+
+func GetStudentById(s storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// id:=r.URL.Query().Get("id")
+		id := r.PathValue("id")
+
+		parseId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			response.ToJson(w, http.StatusBadRequest, response.ErrorResponse(err))
+			return
+		}
+		if id == "" {
+			response.ToJson(w, http.StatusBadRequest, response.ValidationErrorResponse(validator.ValidationErrors{}))
+			return
+		}
+		student, err := s.GetStudentById(parseId)
+		if err != nil {
+			response.ToJson(w, http.StatusInternalServerError, response.ErrorResponse(err))
+			return
+		}
+		response.ToJson(w, http.StatusOK, student)
+	}
+}
+
+func GetAllSutudents(s storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		students, err := s.GetAllStudents()
+		if err != nil {
+			response.ToJson(w, http.StatusInternalServerError, response.ErrorResponse(err))
+			return
+		}
+		response.ToJson(w, http.StatusOK, students)
 
 	}
 
